@@ -19,8 +19,6 @@ export default function LandingPage() {
     setIsCreating(true);
     setError(null);
     try {
-      // For Step 2 UI implementation, we'll navigate to the game screen
-      // In a full implementation, this would call the backend to create a room first
       router.push('/game');
     } catch (err) {
       setError('Failed to create room');
@@ -38,23 +36,22 @@ export default function LandingPage() {
       setError('Please enter a room code');
       return;
     }
-    // For Step 2, navigate to game screen when joining
     router.push('/game');
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-8">
-      <div className="w-full max-w-md space-y-6">
-        <h1 className="text-4xl font-bold text-black">Scribble Arena</h1>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 p-4">
+      <div className="w-full max-w-md space-y-6 bg-gray-800 rounded-xl shadow-xl p-6">
+        <h1 className="text-4xl font-bold text-white mb-6">Scribble Arena</h1>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Username</label>
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Enter your username"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           
@@ -68,14 +65,14 @@ export default function LandingPage() {
             </button>
             
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Join Room</label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Join Room</label>
               <div className="flex gap-2">
                 <input
                   type="text"
                   value={roomCode}
                   onChange={(e) => setRoomCode(e.target.value)}
                   placeholder="Room code"
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="flex-1 px-4 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <button
                   onClick={handleJoinRoom}
@@ -88,7 +85,7 @@ export default function LandingPage() {
           </div>
           
           {error && (
-            <div className="p-3 bg-red-50 border border-red-200 text-red-800 rounded-md">
+            <div className="p-3 bg-red-900/20 border border-red-500 text-red-300 rounded-md">
               {error}
             </div>
           )}
