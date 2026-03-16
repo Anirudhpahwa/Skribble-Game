@@ -73,7 +73,3 @@ After running `docker compose up`:
 - Implement game logic (rounds, scoring, word selection)
 - Add chat system for guessing
 - Create leaderboard and spectator modes
-
-## License
-
-MIT
