@@ -1,43 +1,99 @@
-'use client';
+"use client";
 
 import { useState } from 'react';
-import { api } from '../services/api';
+import { useRouter } from 'next/navigation';
+import { api } from '@/services/api';
 
-export default function Home() {
-  const [response, setResponse] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+export default function LandingPage() {
+  const [username, setUsername] = useState('');
+  const [roomCode, setRoomCode] = useState('');
+  const [isCreating, setIsCreating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleCreateRoom = async () => {
-    setLoading(true);
-    setResponse(null);
+    if (!username.trim()) {
+      setError('Please enter a username');
+      return;
+    }
+    setIsCreating(true);
+    setError(null);
     try {
-      const data = await api.test();
-      setResponse(JSON.stringify(data, null, 2));
-    } catch (error) {
-      setResponse('Error: ' + (error as Error).message);
+      // For Step 2 UI implementation, we'll navigate to the game screen
+      // In a full implementation, this would call the backend to create a room first
+      router.push('/game');
+    } catch (err) {
+      setError('Failed to create room');
     } finally {
-      setLoading(false);
+      setIsCreating(false);
     }
   };
 
+  const handleJoinRoom = async () => {
+    if (!username.trim()) {
+      setError('Please enter a username');
+      return;
+    }
+    if (!roomCode.trim()) {
+      setError('Please enter a room code');
+      return;
+    }
+    // For Step 2, navigate to game screen when joining
+    router.push('/game');
+  };
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-4">
-      <h1 className="text-4xl font-bold text-gray-800 mb-6">
-        Scribble Arena
-      </h1>
-      <button
-        onClick={handleCreateRoom}
-        disabled={loading}
-        className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
-      >
-        {loading ? 'Creating...' : 'Create Room'}
-      </button>
-      {response && (
-        <div className="mt-6 p-4 bg-gray-100 rounded-lg w-full max-w-xs">
-          <h2 className="font-semibold mb-2">Response:</h2>
-          <pre className="text-sm text-gray-800">{response}</pre>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-8">
+      <div className="w-full max-w-md space-y-6">
+        <h1 className="text-4xl font-bold text-black">Scribble Arena</h1>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Enter your username"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          
+          <div className="space-y-3">
+            <button
+              onClick={handleCreateRoom}
+              disabled={isCreating}
+              className="w-full px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+            >
+              {isCreating ? 'Creating...' : 'Create Room'}
+            </button>
+            
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Join Room</label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={roomCode}
+                  onChange={(e) => setRoomCode(e.target.value)}
+                  placeholder="Room code"
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  onClick={handleJoinRoom}
+                  className="px-4 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors"
+                >
+                  Join
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          {error && (
+            <div className="p-3 bg-red-50 border border-red-200 text-red-800 rounded-md">
+              {error}
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }
