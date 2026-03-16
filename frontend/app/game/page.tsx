@@ -1,65 +1,81 @@
 "use client";
 
-import Canvas from '@/components/Canvas';
-import Toolbar from '@/components/Toolbar';
-import PlayerList from '@/components/PlayerList';
-import ChatBox from '@/components/ChatBox';
 import GameHeader from '@/components/GameHeader';
+import PlayerList from '@/components/PlayerList';
+import Canvas from '@/components/Canvas';
+import ChatPanel from '@/components/ChatPanel';
+import DrawingToolbar from '@/components/DrawingToolbar';
+import { useState } from 'react';
 
 export default function GameScreen() {
-  // Mock data for UI implementation - will be replaced with real state in later steps
-  const mockPlayer = { id: 1, username: 'Player1', score: 0, isDrawing: false };
-  const mockPlayers = [
-    { id: 1, username: 'Player1', score: 120, isDrawing: true },
-    { id: 2, username: 'Player2', score: 80, isDrawing: false },
-    { id: 3, username: 'Player3', score: 50, isDrawing: false }
-  ];
-  const mockWordHint = "_ _ _ _ _"; // e.g., "apple" would be "_ _ _ _ _"
-  const mockTimeLeft = 45;
-  const mockChatMessages = [
-    { id: 1, username: 'Player2', text: 'is it a fruit?', isCorrect: false },
-    { id: 2, username: 'Player3', text: 'apple?', isCorrect: true }
-  ];
+  const [round, setRound] = useState(1);
+  const [timeLeft, setTimeLeft] = useState(60);
+  const [word, setWord] = useState('_____');
+  const [players, setPlayers] = useState([
+    { id: 1, name: 'Alex', score: 10 },
+    { id: 2, name: 'Sam', score: 5 },
+    { id: 3, name: 'You', score: 0, isDrawing: true },
+  ]);
+  const [chatMessages, setChatMessages] = useState([
+    { id: 1, text: 'hi', isCorrect: false },
+    { id: 2, text: 'gg', isCorrect: false },
+    { id: 3, text: 'nice drawing', isCorrect: true },
+  ]);
+  const [drawColor, setDrawColor] = useState('#000000');
+  const [brushSize, setBrushSize] = useState(3);
+  const [isEraser, setIsEraser] = useState(false);
+
+  const startDrawing = (x: number, y: number) => {
+    console.log('start', x, y);
+  };
+  const drawMove = (x: number, y: number) => {
+    console.log('draw', x, y);
+  };
+  const endDrawing = () => {
+    console.log('end');
+  };
+  const clearCanvas = () => {
+    console.log('canvas cleared');
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Game Header */}
-      <GameHeader 
-        timeLeft={mockTimeLeft} 
-        wordHint={mockWordHint} 
-        currentPlayer={mockPlayer.username}
+    <div className="min-h-screen flex flex-col">
+      <GameHeader
+        round={round}
+        timeLeft={timeLeft}
+        word={word}
       />
-      
-      {/* Main Game Area */}
+
       <div className="flex-1 flex p-4 gap-4">
-        {/* Canvas Area */}
-        <div className="flex-1 min-w-0">
-          <div className="bg-white rounded-lg shadow p-4">
-            <Canvas 
-              isDrawing={mockPlayer.isDrawing} 
-              onDrawingStart={() => {}} 
-              onDrawingMove={() => {}} 
-              onDrawingEnd={() => {}} 
+        <PlayerList players={players} />
+
+        <div className="flex-1">
+          <div className="bg-white rounded-xl shadow-lg p-4">
+            <Canvas
+              width={800}
+              height={500}
+              color={drawColor}
+              brushSize={brushSize}
+              isEraser={isEraser}
+              onDrawingStart={startDrawing}
+              onDrawingMove={drawMove}
+              onDrawingEnd={endDrawing}
+              onClear={clearCanvas}
             />
           </div>
         </div>
-        
-        {/* Sidebar */}
-        <div className="w-64 space-y-4">
-          <PlayerList players={mockPlayers} currentPlayerId={mockPlayer.id} />
-          <ChatBox messages={mockChatMessages} currentUserId={mockPlayer.id} />
-        </div>
+
+        <ChatPanel messages={chatMessages} />
       </div>
-      
-      {/* Toolbar */}
-      <Toolbar 
-        currentColor="#000000" 
-        onColorChange={() => {}} 
-        brushSize={3} 
-        onBrushSizeChange={() => {}} 
-        isEraserActive={false} 
-        onToggleEraser={() => {}} 
-        onClearCanvas={() => {}} 
+
+      <DrawingToolbar
+        color={drawColor}
+        onColorChange={setDrawColor}
+        brushSize={brushSize}
+        onBrushSizeChange={setBrushSize}
+        isEraser={isEraser}
+        onToggleEraser={setIsEraser}
+        onClear={clearCanvas}
       />
     </div>
   );

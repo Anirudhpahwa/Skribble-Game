@@ -2,15 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Optional: reset some defaults */
-html,
-body {
+html, body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: system-ui, sans-serif;
 }
 
 body {
-  @apply bg-white text-black;
+  @apply bg-gray-900 text-gray-100;
 }
