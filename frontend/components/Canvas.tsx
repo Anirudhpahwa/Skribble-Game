@@ -1,104 +1,130 @@
 "use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
+
+interface Point {
+  x: number;
+  y: number;
+}
+interface Stroke {
+  points: Point[];
+  color: string;
+  size: number;
+}
 
 interface CanvasProps {
   width: number;
   height: number;
-  color: string;
-  brushSize: number;
-  isEraser: boolean;
-  onDrawingStart: (x: number, y: number) => void;
-  onDrawingMove: (x: number, y: number) => void;
+  strokes: Stroke[];
+  currentStroke: Point[];
+  currentColor: string;
+  currentSize: number;
+  onDrawingStart: (e: React.MouseEvent<HTMLCanvasElement>) => void;
+  onDrawingMove: (e: React.MouseEvent<HTMLCanvasElement>) => void;
   onDrawingEnd: () => void;
-  onClear: () => void;
 }
 
 export default function Canvas({
   width,
   height,
-  color,
-  brushSize,
-  isEraser,
+  strokes,
+  currentStroke,
+  currentColor,
+  currentSize,
   onDrawingStart,
   onDrawingMove,
   onDrawingEnd,
-  onClear,
 }: CanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
 
-  // Initialize canvas
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    ctxRef.current = ctx;
+
+    // Set canvas size
     canvas.width = width;
     canvas.height = height;
+
+    // Clear canvas
+    ctx.clearRect(0, 0, width, height);
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, width, height);
-  }, [width, height]);
 
-  // Drawing state
-  const [isDrawing, setIsDrawing] = useState(false);
+    // Set drawing properties
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
 
-  // Mouse handlers
+    // Redraw existing strokes
+    strokes.forEach(stroke => {
+      ctx.strokeStyle = stroke.color;
+      ctx.lineWidth = stroke.size;
+      ctx.beginPath();
+      const points = stroke.points;
+      if (points.length > 0) {
+        ctx.moveTo(points[0].x, points[0].y);
+        for (let i = 1; i < points.length; i++) {
+          ctx.lineTo(points[i].x, points[i].y);
+        }
+        ctx.stroke();
+      }
+    });
+
+    // Draw current stroke (if any)
+    if (currentStroke.length > 0) {
+      ctx.strokeStyle = currentColor;
+      ctx.lineWidth = currentSize;
+      ctx.beginPath();
+      ctx.moveTo(currentStroke[0].x, currentStroke[0].y);
+      for (let i = 1; i < currentStroke.length; i++) {
+        ctx.lineTo(currentStroke[i].x, currentStroke[i].y);
+      }
+      ctx.stroke();
+    }
+  }, [width, height, strokes, currentStroke, currentColor, currentSize]);
+
+  // Mouse event handlers
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const start = (e: MouseEvent) => {
-      setIsDrawing(true);
+    const handleMouseDown = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-      onDrawingStart(x, y);
+      onDrawingStart(e);
     };
-    const move = (e: MouseEvent) => {
-      if (!isDrawing) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-      onDrawingMove(x, y);
+      onDrawingMove(e);
     };
-    const end = () => {
-      setIsDrawing(false);
+
+    const handleMouseUp = () => {
       onDrawingEnd();
     };
 
-    canvas.addEventListener('mousedown', start);
-    canvas.addEventListener('mousemove', move);
-    canvas.addEventListener('mouseup', end);
-    canvas.addEventListener('mouseleave', end);
+    canvas.addEventListener('mousedown', handleMouseDown);
+    canvas.addEventListener('mousemove', handleMouseMove);
+    canvas.addEventListener('mouseup', handleMouseUp);
+    canvas.addEventListener('mouseleave', handleMouseUp);
 
     return () => {
-      canvas.removeEventListener('mousedown', start);
-      canvas.removeEventListener('mousemove', move);
-      canvas.removeEventListener('mouseup', end);
-      canvas.removeEventListener('mouseleave', end);
+      canvas.removeEventListener('mousedown', handleMouseDown);
+      canvas.removeEventListener('mousemove', handleMouseMove);
+      canvas.removeEventListener('mouseup', handleMouseUp);
+      canvas.removeEventListener('mouseleave', handleMouseUp);
     };
-  }, []); // Note: we don't depend on color/brushSize/isEraser because the drawing logic is stubbed.
-  // However, if we wanted to draw, we would need to use the color, brushSize, isEraser in the move handler.
-  // For Step 3, we are just logging. So it's fine.
+  }, [onDrawingStart, onDrawingMove, onDrawingEnd]);
 
-  // Clear handler
-  const handleClear = () => {
-    const ctx = ctxRef.current;
-    if (!ctx) return;
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, width, height);
-    onClear();
-  };
-
-  // Optional: allow clearing by double-click or a button? We'll rely on the toolbar button.
   return (
     <div>
       <canvas
         ref={canvasRef}
-        className="cursor-pointer bg-white"
-        // We could add onClick={handleClear} but we have a toolbar button.
+        className="w-full h-full cursor-pointer bg-white"
       />
     </div>
   );

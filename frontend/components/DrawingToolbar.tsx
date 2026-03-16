@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 interface DrawingToolbarProps {
   color: string;
   onColorChange: (c: string) => void;
@@ -6,12 +8,18 @@ interface DrawingToolbarProps {
   isEraser: boolean;
   onToggleEraser: () => void;
   onClear: () => void;
+  onUndo: () => void;
 }
 
 const palette = [
-  '#000000', '#FF0000', '#00FF00', '#0000FF',
-  '#FFFF00', '#FF00FF', '#00FFFF', '#FFFFFF',
-  '#FFA500', '#800080', '#A52A2A', '#808080',
+  '#000000', // black
+  '#FFFFFF', // white
+  '#FF0000', // red
+  '#FFA500', // orange
+  '#FFFF00', // yellow
+  '#008000', // green
+  '#0000FF', // blue
+  '#800080', // purple
 ];
 
 export default function DrawingToolbar({
@@ -22,9 +30,10 @@ export default function DrawingToolbar({
   isEraser,
   onToggleEraser,
   onClear,
+  onUndo,
 }: DrawingToolbarProps) {
   return (
-    <div className="bg-gray-800 rounded-xl shadow-lg px-4 py-3 flex flex-wrap gap-3">
+    <div className="bg-gray-800 rounded-lg p-3 flex flex-wrap items-center gap-3">
       {/* Color palette */}
       <div className="flex flex-wrap gap-2">
         <span className="text-sm font-medium text-gray-300">Color:</span>
@@ -32,7 +41,7 @@ export default function DrawingToolbar({
           <button
             key={c}
             onClick={() => onColorChange(c)}
-            className={`w-6 h-6 rounded-full border-2 ${color === c ? 'border-yellow-400' : 'border-transparent'} bg-${c === '#FFFFFF' ? 'gray-200' : c}`}
+            className={`w-8 h-8 rounded border-2 ${color === c ? 'border-yellow-400' : 'border-transparent'} bg-${c === '#FFFFFF' ? 'gray-200' : c}`}
           />
         ))}
       </div>
@@ -58,6 +67,12 @@ export default function DrawingToolbar({
           className={`px-3 py-1.5 text-sm font-medium rounded ${isEraser ? 'bg-yellow-500 text-white' : 'bg-gray-600 text-gray-200'} hover:${isEraser ? 'bg-yellow-600' : 'bg-gray-500'}`}
         >
           Eraser
+        </button>
+        <button
+          onClick={onUndo}
+          className="px-3 py-1.5 text-sm font-medium bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Undo
         </button>
         <button
           onClick={onClear}
