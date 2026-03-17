@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from 'react';
 
 interface DrawingToolbarProps {
@@ -11,13 +13,13 @@ interface DrawingToolbarProps {
   onUndo: () => void;
 }
 
-const palette = [
+const colors = [
   '#000000', // black
   '#FFFFFF', // white
   '#FF0000', // red
   '#FFA500', // orange
   '#FFFF00', // yellow
-  '#008000', // green
+  '#00FF00', // green
   '#0000FF', // blue
   '#800080', // purple
 ];
@@ -30,18 +32,19 @@ export default function DrawingToolbar({
   isEraser,
   onToggleEraser,
   onClear,
-  onUndo,
+  onUndo
 }: DrawingToolbarProps) {
   return (
     <div className="bg-gray-800 rounded-lg p-3 flex flex-wrap items-center gap-3">
       {/* Color palette */}
       <div className="flex flex-wrap gap-2">
         <span className="text-sm font-medium text-gray-300">Color:</span>
-        {palette.map(c => (
+        {colors.map(c => (
           <button
             key={c}
             onClick={() => onColorChange(c)}
-            className={`w-8 h-8 rounded border-2 ${color === c ? 'border-yellow-400' : 'border-transparent'} bg-${c === '#FFFFFF' ? 'gray-200' : c}`}
+             className={`w-8 h-8 rounded border-2 ${color === c ? 'border-yellow-400' : 'border-gray-500'}`}
+            style={{ backgroundColor: c }}
           />
         ))}
       </div>

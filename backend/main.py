@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.health import router as health_router
 from api.test import router as test_router
+from api.rooms import router as rooms_router
 
 app = FastAPI(title="Scribble Arena API")
 
@@ -17,6 +18,7 @@ app.add_middleware(
 # Include routers
 app.include_router(health_router, prefix="/health", tags=["health"])
 app.include_router(test_router, prefix="/test", tags=["test"])
+app.include_router(rooms_router, prefix="/rooms", tags=["rooms"])
 
 # Root endpoint
 @app.get("/")

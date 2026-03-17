@@ -19,9 +19,14 @@ export default function LandingPage() {
     setIsCreating(true);
     setError(null);
     try {
-      router.push('/game');
-    } catch (err) {
-      setError('Failed to create room');
+      const response = await api.createRoom(username.trim());
+      // Store player info in localStorage or context for now
+      // In a real app, we might use context or a state management library
+      localStorage.setItem('playerId', response.playerId);
+      localStorage.setItem('username', username.trim());
+      router.push(`/lobby/${response.roomCode}`);
+    } catch (err: any) {
+      setError('Failed to create room: ' + (err.message || 'Unknown error'));
     } finally {
       setIsCreating(false);
     }
@@ -36,7 +41,18 @@ export default function LandingPage() {
       setError('Please enter a room code');
       return;
     }
-    router.push('/game');
+    setIsCreating(true);
+    setError(null);
+    try {
+      const response = await api.joinRoom(roomCode.trim().toUpperCase(), username.trim());
+      localStorage.setItem('playerId', response.playerId);
+      localStorage.setItem('username', username.trim());
+      router.push(`/lobby/${roomCode.trim().toUpperCase()}`);
+    } catch (err: any) {
+      setError('Failed to join room: ' + (err.message || 'Unknown error'));
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   return (

@@ -1,5 +1,5 @@
 interface Player {
-  id: number;
+  id: string;
   name: string;
   score: number;
   isDrawing?: boolean;
