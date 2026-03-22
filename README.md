@@ -65,7 +65,7 @@ After running `docker compose up`:
 - PostgreSQL stores persistent data (users, rooms, matches, scores).
 - Redis stores real-time state (active rooms, players, game state).
 
-## Next Steps (Future Development)
+## RoadMap
 
 - Implement room creation and joining (REST API)
 - Set up WebSocket connections for real-time communication
